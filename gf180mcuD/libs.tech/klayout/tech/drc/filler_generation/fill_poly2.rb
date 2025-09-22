@@ -4,7 +4,7 @@ tile_size = 400.0
 # origin of the fill pattern
 # For "enhanced fill use":
 #   fc_origin = nil
-fc_origin = RBA::DPoint::new(2.1, 2.1)
+fc_origin = RBA::DPoint::new(-0.3, -0.3)
 
 # creates a fill cell (DPF.1 5.6x5.6 for COMP)
 fc_box = RBA::DBox::new(-2.8, -2.8, 2.8, 2.8)
