@@ -44,7 +44,7 @@ library ("gf180mcu_fd_io__ss_125C_4v50") {
 	default_inout_pin_cap : 0.000000;
 	default_input_pin_cap : 0.000000;
 	default_max_capacitance : 999.000000;
-	default_max_fanout : 1.000000;
+	default_max_fanout : 5.000000;
 	default_cell_leakage_power : 0.000000;
 	default_leakage_power_density : 0.000000;
 	library_features("report_delay_calculation", \
