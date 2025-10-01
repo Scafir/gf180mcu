@@ -102,7 +102,7 @@ set ::env(PAD_PLACE_IO_TERMINALS) "\
 "
 
 # Pad sites to edge offset
-set ::env(PAD_EDGE_SPACING) "25"
+set ::env(PAD_EDGE_SPACING) "26"
 
 # Latch mapping
 set ::env(SYNTH_LATCH_MAP) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/openlane/$::env(STD_CELL_LIBRARY)/latch_map.v"
