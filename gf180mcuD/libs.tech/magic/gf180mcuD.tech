@@ -1259,12 +1259,12 @@ style drc
  and dnwell
  and-not pwell
 
- templayer pdiff_missing_pwell *ndiff,*ndiode,ndiffres,nfet
+ templayer ndiff_missing_pwell *ndiff,*ndiode,ndiffres,nfet
  grow 430
  and dnwell
  and-not pwell
 
- templayer mvpdiff_missing_pwell *mvndiff,mvndiffres,mvnfet
+ templayer mvndiff_missing_pwell *mvndiff,mvndiffres,mvnfet
  grow 600
  and dnwell
  and-not pwell
@@ -1290,7 +1290,8 @@ style drc
  bloat-all alldiffmv nwell
 
  templayer bad_nwell
- bloat-all alldifflv,schottky nwell
+ # All low-voltage diffusion except tap diffusion (nsd, psd)
+ bloat-all *ndif,*ndiode,*nndiode,ndiffres,nfet,nnfet,ncap,*pdif,*pdiode,pdiffres,pfet,pcap,schottky nwell
  and mv_nwell
 
  # Check for nwell resistor in deep nwell
@@ -1402,6 +1403,10 @@ style  import
  ignore SOURCE
  ignore VTEXT
  ignore FILLOBS
+ ignore SCRIBE
+ ignore LATCHUP_ID
+ ignore IO_ID
+ ignore ESD_ID
 
  layer pwell PWELL,PWELLTXT
  and-not BJTDEF,BJTDRC
@@ -2416,6 +2421,10 @@ style  import
  calma DUALGATE 55 0
  calma SRAMDEF  108 5
  calma FET5VDEF 112 1
+ calma SCRIBE	167 5
+ calma LATCHUP_ID 137 5
+ calma IO_ID	119 5
+ calma ESD_ID	24 5
 
 end
 
@@ -2505,6 +2514,11 @@ drc
 	"Diffusion spacing < %d (DF.3a)"
  spacing alldiffmv,mvnvar,mvpvar alldiffmv,mvnvar,mvpvar 360 touching_ok \
 	"Diffusion spacing < %d (DF.3a)"
+ # Low voltage tap cannot abut high voltage source/drain
+ spacing *mvpdiff,mvpvar *nsd 360 touching_illegal \
+	"Diffusion spacing to tap < %d (DF.3a)"
+ spacing *mvndiff,mvnvar *psd 360 touching_illegal \
+	 "Diffusion spacing to tap < %d (DF.3a)"
 
  spacing *ndiff,*ndiode,nfet,nnfet,ncap allnwell 430 touching_illegal \
 	"N-Diffusion spacing to N-well < %d (DF.8)"
@@ -2596,10 +2610,12 @@ drc
  spacing allactiveres allactiveres 400 touching_ok \
 	"Diffusion resistor spacing < %d (NDRES.2)
 
- spacing allactiveres allactive 450 touching_ok \
+ spacing allactiveres allactive 440 touching_ok \
 	"Diffusion resistor spacing to unrelated diffusion < %d (NDRES.3)"
- spacing allactiveres allpoly 450 touching_ok \
-	"Diffusion resistor spacing to unrelated poly < %d (NDRES.4)"
+
+# Not part of the open PDK docs, disabled for now
+# spacing allactiveres allpoly 440 touching_ok \
+#	"Diffusion resistor spacing to unrelated poly < %d (NDRES.4)"
 
 #-----------------------------
 # CONT
@@ -2781,12 +2797,12 @@ variants *
  surround v4/m5 *m5 50 30 directional \
 	"Metal5 overlap of Via4 < %d in one direction (V4.4i - V4.4)"
 
- width *m5,rm5 360 "Metal5 width < %d (MT.1)"
- spacing allm5,obsm5  allm5,obsm5 380 touching_ok "Metal5 spacing < %d (MT.2a)"
- area allm5,obsm5 562500 360 "Metal5 minimum area < %a (MT.4)"
+ width *m5,rm5 440 "Metal5 width < %d (MT.1)"
+ spacing allm5,obsm5  allm5,obsm5 460 touching_ok "Metal5 spacing < %d (MT.2a)"
+ area allm5,obsm5 526500 440 "Metal5 minimum area < %a (MT.4)"
 
 variants (fast),(full)
- widespacing allm5,obsm5 10000 allm5,obsm5  500 touching_ok \
+ widespacing allm5,obsm5 10000 allm5,obsm5  600 touching_ok \
 	"Metal5 > %c spacing to unrelated m5 < %d (MT.2b)"
 
 variants *
@@ -3047,7 +3063,7 @@ variants ()
 
  resist (allm4)/metal4  	    90
 
- resist (allm5)/metal5  	    60
+ resist (allm5)/metal5  	    40
 
 
  contact ndc,nsc,ndic,nndic	  6300
@@ -3096,7 +3112,7 @@ variants (hrhc),(hrlc)
 
  resist (allm4)/metal4  	   104
 
- resist (allm5)/metal5  	    70
+ resist (allm5)/metal5  	    49
 
 
  contact ndc,nsc,ndic,nndic	 15000
@@ -3145,7 +3161,7 @@ variants (lrhc),(lrlc)
 
  resist (allm4)/metal4  	    76
 
- resist (allm5)/metal5  	    50
+ resist (allm5)/metal5  	    31
 
 
  contact ndc,nsc,ndic,nndic	     0
@@ -3791,13 +3807,13 @@ variants *
  device msubcircuit nfet_03v3 nfet ndiff,ndc ndiff,ndc allpsub error \
 	l=l w=w a1=as p1=ps a2=ad p2=pd
  device msubcircuit pfet_06v0 mvpfet mvpdiff,mvpdc mvpdiff,mvpdc allnwell error \
-	l>=5.5e-7 l=l w=w a1=as p1=ps a2=ad p2=pd
+	l>=0.55 l=l w=w a1=as p1=ps a2=ad p2=pd
  device msubcircuit pfet_05v0 mvpfet mvpdiff,mvpdc mvpdiff,mvpdc allnwell error \
-	l<5.5e-7 l=l w=w a1=as p1=ps a2=ad p2=pd
+	l<0.55 l=l w=w a1=as p1=ps a2=ad p2=pd
  device msubcircuit nfet_06v0 mvnfet mvndiff,mvndc mvndiff,mvndc allpsub error \
-	l>=7e-7 l=l w=w a1=as p1=ps a2=ad p2=pd
+	l>=0.7 l=l w=w a1=as p1=ps a2=ad p2=pd
  device msubcircuit nfet_05v0 mvnfet mvndiff,mvndc mvndiff,mvndc allpsub error \
-	l<7e-7 l=l w=w a1=as p1=ps a2=ad p2=pd
+	l<0.7 l=l w=w a1=as p1=ps a2=ad p2=pd
  device msubcircuit pfet_03v3_dss pfet pdiffres pdiffres allnwell error \
 	l=l w=w a1=as p1=ps a2=ad p2=pd l1=s_sab l2=d_sab
  device msubcircuit nfet_03v3_dss nfet ndiffres ndiffres allpsub error \
