@@ -95,7 +95,7 @@ for metal in do_layers
 
   # DM.10
   row_step = RBA::DVector::new(2 + line_spaces[metal], 0.5)
-  column_step = RBA::DVector::new(0, 2 + line_spaces[metal])
+  column_step = RBA::DVector::new(0.5, 2 + line_spaces[metal])
 
   row_step_in_dbu    = $micron2dbu * row_step
   column_step_in_dbu = $micron2dbu * column_step

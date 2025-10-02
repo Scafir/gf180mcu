@@ -33,7 +33,7 @@ line_space = 2.4
 
 # DPF.3
 row_step = RBA::DVector::new(5.6 + line_space, 1.6)
-column_step = RBA::DVector::new(0, 5.6 + line_space)
+column_step = RBA::DVector::new(1.6, 5.6 + line_space)
 
 row_step_in_dbu    = $micron2dbu * row_step
 column_step_in_dbu = $micron2dbu * column_step
