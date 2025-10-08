@@ -190,8 +190,15 @@ set ::env(MAGIC_TECH_FILE) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/magic/$::env(
 ## Klayout
 set ::env(KLAYOUT_TECH) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/klayout/tech/gf180mcu.lyt"
 set ::env(KLAYOUT_PROPERTIES) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/klayout/tech/gf180mcu.lyp"
-set ::env(KLAYOUT_DRC_TECH_SCRIPT) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/klayout/drc/gf180mcu.drc"
 set ::env(KLAYOUT_DEF_LAYER_MAP) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/klayout/tech/gf180mcu.map"
+set ::env(KLAYOUT_DRC_RUNSET) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/klayout/tech/drc/gf180mcu.drc"
+set ::env(KLAYOUT_DRC_OPTIONS) [dict create]
+dict set ::env(KLAYOUT_DRC_OPTIONS) feol false
+dict set ::env(KLAYOUT_DRC_OPTIONS) beol false
+dict set ::env(KLAYOUT_DRC_OPTIONS) dummy true
+dict set ::env(KLAYOUT_DRC_OPTIONS) run_mode "tiling"
+set ::env(KLAYOUT_LVS_SCRIPT) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/klayout/tech/lvs/gf180mcu.lvs"
+set ::env(KLAYOUT_LVS_OPTIONS) [dict create run_mode deep ]
 
 ## Netgen
 set ::env(NETGEN_SETUP_FILE) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/netgen/$::env(PDK)_setup.tcl"
