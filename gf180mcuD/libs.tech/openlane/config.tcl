@@ -190,6 +190,7 @@ set ::env(KLAYOUT_DRC_OPTIONS) [dict create]
 dict set ::env(KLAYOUT_DRC_OPTIONS) feol false
 dict set ::env(KLAYOUT_DRC_OPTIONS) beol false
 dict set ::env(KLAYOUT_DRC_OPTIONS) dummy true
+dict set ::env(KLAYOUT_DRC_OPTIONS) offgrid true
 dict set ::env(KLAYOUT_DRC_OPTIONS) run_mode "tiling"
 set ::env(KLAYOUT_LVS_SCRIPT) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/klayout/tech/lvs/gf180mcu.lvs"
 set ::env(KLAYOUT_LVS_OPTIONS) [dict create run_mode deep ]
