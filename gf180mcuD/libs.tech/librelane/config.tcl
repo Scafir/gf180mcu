@@ -14,22 +14,22 @@ if { ![info exist ::env(STD_CELL_LIBRARY)] } {
     set ::env(STD_CELL_LIBRARY) gf180mcu_fd_sc_mcu7t5v0
 }
 
-if { ![info exist ::env(IO_PAD_LIBRARY)] } {
-    set ::env(IO_PAD_LIBRARY) gf180mcu_fd_io
+if { ![info exist ::env(PAD_CELL_LIBRARY)] } {
+    set ::env(PAD_CELL_LIBRARY) gf180mcu_fd_io
 }
 
 # Lib Files
 set ::env(LIB_SYNTH) "\
     $::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(STD_CELL_LIBRARY)/lib/$::env(STD_CELL_LIBRARY)__tt_025C_5v00.lib\
-    [glob $::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(IO_PAD_LIBRARY)/lib/*__tt_025C_5v00.lib]\
+    [glob $::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(PAD_CELL_LIBRARY)/lib/*__tt_025C_5v00.lib]\
 "
 set ::env(LIB_FASTEST) "\
     $::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(STD_CELL_LIBRARY)/lib/$::env(STD_CELL_LIBRARY)__ff_n40C_5v50.lib\
-    [glob $::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(IO_PAD_LIBRARY)/lib/*__ff_n40C_5v50.lib]\
+    [glob $::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(PAD_CELL_LIBRARY)/lib/*__ff_n40C_5v50.lib]\
 "
 set ::env(LIB_SLOWEST) "\
     $::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(STD_CELL_LIBRARY)/lib/$::env(STD_CELL_LIBRARY)__ss_125C_4v50.lib\
-    [glob $::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(IO_PAD_LIBRARY)/lib/*__ss_125C_4v50.lib]\
+    [glob $::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(PAD_CELL_LIBRARY)/lib/*__ss_125C_4v50.lib]\
 "
 
 set ::env(LIB_TYPICAL) $::env(LIB_SYNTH)
@@ -46,84 +46,41 @@ set ::env(CELL_VERILOG_MODELS) "$::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(STD
 set ::env(CELL_SPICE_MODELS) "$::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(STD_CELL_LIBRARY)/spice/$::env(STD_CELL_LIBRARY).spice"
 set ::env(CELL_CDLS)	"$::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(STD_CELL_LIBRARY)/cdl/$::env(STD_CELL_LIBRARY).cdl"
 
-# Pad views
-set ::env(PAD_LEFS) [glob "$::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(IO_PAD_LIBRARY)/lef/*.lef"]
-# Unfortunately the foundry library must be read in before the ef or ws library (ghost cell)
-set ::env(PAD_GDS) "\
-    $::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(IO_PAD_LIBRARY)/gds/gf180mcu_fd_io.gds\
-    $::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(IO_PAD_LIBRARY)/gds/gf180mcu_ef_io.gds\
-    $::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(IO_PAD_LIBRARY)/gds/gf180mcu_ws_io.gds\
-"
-set ::env(PAD_VERILOG_MODELS) [glob "$::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(IO_PAD_LIBRARY)/verilog/*__blackbox.v"]
-set ::env(PAD_SPICE_MODELS) [glob "$::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(IO_PAD_LIBRARY)/spice/*.spice"]
-set ::env(PAD_CDLS) "$::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(IO_PAD_LIBRARY)/cdl/$::env(IO_PAD_LIBRARY).cdl"
-
-# Pad IO sites
-set ::env(PAD_SITE_NAME) "GF_IO_Site"
-set ::env(PAD_CORNER_SITE_NAME) "GF_COR_Site"
-
-# Pad fake IO sites information
-set ::env(PAD_FAKE_SITE_HEIGHT) "350"
-set ::env(PAD_FAKE_SITE_WIDTH) "0.1"
-set ::env(PAD_FAKE_CORNER_SITE_HEIGHT) "355"
-set ::env(PAD_FAKE_CORNER_SITE_WIDTH) "355"
-
 # Pad cells
-set ::env(PAD_CORNER) "$::env(IO_PAD_LIBRARY)__cor"
-set ::env(PAD_FILLERS) "\
-    $::env(IO_PAD_LIBRARY)__fill10\
-    $::env(IO_PAD_LIBRARY)__fill5\
-    $::env(IO_PAD_LIBRARY)__fill1\
-    $::env(IO_PAD_LIBRARY)__fillnc\
+set ::env(PAD_LEFS) [glob "$::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(PAD_CELL_LIBRARY)/lef/*.lef"]
+# Unfortunately, the foundry library must be read in before the ef or ws library (ghost cell)
+set ::env(PAD_GDS) "\
+    $::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(PAD_CELL_LIBRARY)/gds/gf180mcu_fd_io.gds\
+    $::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(PAD_CELL_LIBRARY)/gds/gf180mcu_ef_io.gds\
+    $::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(PAD_CELL_LIBRARY)/gds/gf180mcu_ws_io.gds\
 "
-
-# Pad bondpad information (if needed)
-# Note: bondpads are integrated in GF180MCU
-#set ::env(PAD_BONDPAD_NAME) "bondpad_70x70"
-#set ::env(PAD_BONDPAD_WIDTH) "70"
-#set ::env(PAD_BONDPAD_HEIGHT) "70"
-#set ::env(PAD_BONDPAD_OFFSETS) [dict create]
-#dict set ::env(PAD_BONDPAD_OFFSETS) "instance*" "5.0, -70.0"
-
-# Pad io terminals (if needed)
-set ::env(PAD_PLACE_IO_TERMINALS) "\
-    $::env(IO_PAD_LIBRARY)__asig_5p0/ASIG5V\
-    $::env(IO_PAD_LIBRARY)__bi_24t/PAD\
-    $::env(IO_PAD_LIBRARY)__bi_t/PAD\
-    $::env(IO_PAD_LIBRARY)__in_c/PAD\
-    $::env(IO_PAD_LIBRARY)__in_s/PAD\
-    $::env(IO_PAD_LIBRARY)__dvss/DVSS\
-    $::env(IO_PAD_LIBRARY)__dvdd/DVDD\
-    gf180mcu_ws_io__dvss/DVSS\
-    gf180mcu_ws_io__dvdd/DVDD\
-"
-
-# Pad sites to edge offset
-set ::env(PAD_EDGE_SPACING) "26"
+set ::env(PAD_VERILOG_MODELS) [glob "$::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(PAD_CELL_LIBRARY)/verilog/*__blackbox.v"]
+set ::env(PAD_SPICE_MODELS) [glob "$::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(PAD_CELL_LIBRARY)/spice/*.spice"]
+set ::env(PAD_CDLS) "$::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(PAD_CELL_LIBRARY)/cdl/$::env(PAD_CELL_LIBRARY).cdl"
 
 # Latch mapping
-set ::env(SYNTH_LATCH_MAP) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/openlane/$::env(STD_CELL_LIBRARY)/latch_map.v"
+set ::env(SYNTH_LATCH_MAP) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/librelane/$::env(STD_CELL_LIBRARY)/latch_map.v"
 
 # Tri-state buffer mapping
-set ::env(TRISTATE_BUFFER_MAP) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/openlane/$::env(STD_CELL_LIBRARY)/tribuff_map.v"
+set ::env(TRISTATE_BUFFER_MAP) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/librelane/$::env(STD_CELL_LIBRARY)/tribuff_map.v"
 
 # Full adder mapping
-set ::env(FULL_ADDER_MAP) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/openlane/$::env(STD_CELL_LIBRARY)/fa_map.v"
+set ::env(FULL_ADDER_MAP) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/librelane/$::env(STD_CELL_LIBRARY)/fa_map.v"
 
 # Ripple carry adder mapping
-set ::env(RIPPLE_CARRY_ADDER_MAP) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/openlane/$::env(STD_CELL_LIBRARY)/rca_map.v"
+set ::env(RIPPLE_CARRY_ADDER_MAP) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/librelane/$::env(STD_CELL_LIBRARY)/rca_map.v"
 
 # Carry select adder mapping
-set ::env(CARRY_SELECT_ADDER_MAP) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/openlane/$::env(STD_CELL_LIBRARY)/csa_map.v"
+set ::env(CARRY_SELECT_ADDER_MAP) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/librelane/$::env(STD_CELL_LIBRARY)/csa_map.v"
 
 # Default No Synth List
-set ::env(SYNTH_EXCLUDED_CELL_FILE) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/openlane/$::env(STD_CELL_LIBRARY)/synth_exclude.cells"
+set ::env(SYNTH_EXCLUDED_CELL_FILE) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/librelane/$::env(STD_CELL_LIBRARY)/synth_exclude.cells"
 
 # Default DRC Exclude List
-set ::env(PNR_EXCLUDED_CELL_FILE) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/openlane/$::env(STD_CELL_LIBRARY)/pnr_exclude.cells"
+set ::env(PNR_EXCLUDED_CELL_FILE) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/librelane/$::env(STD_CELL_LIBRARY)/pnr_exclude.cells"
 
 # Open-RCX Rules File
-set ::env(RCX_RULES) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/openlane/rcx_rules.info"
+set ::env(RCX_RULES) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/librelane/rcx_rules.info"
 
 # Floorplanning
 
@@ -162,9 +119,9 @@ set ::env(FP_PDN_CORE_RING_VOFFSET) 6
 set ::env(FP_PDN_CORE_RING_HOFFSET) 6
 
 # Timing
-set ::env(RCX_RULES) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/openlane/rules.openrcx.$::env(PDK).nom"
-set ::env(RCX_RULES_MIN) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/openlane/rules.openrcx.$::env(PDK).min"
-set ::env(RCX_RULES_MAX) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/openlane/rules.openrcx.$::env(PDK).max"
+set ::env(RCX_RULES) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/librelane/rules.openrcx.$::env(PDK).nom"
+set ::env(RCX_RULES_MIN) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/librelane/rules.openrcx.$::env(PDK).min"
+set ::env(RCX_RULES_MAX) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/librelane/rules.openrcx.$::env(PDK).max"
 
 # Routing
 set ::env(METAL_LAYER_NAMES) "Metal1 Metal2 Metal3 Metal4 Metal5"
@@ -174,7 +131,7 @@ set ::env(DRT_MIN_LAYER) "Metal1"
 set ::env(GRT_LAYER_ADJUSTMENTS) "0,0,0,0,0"
 
 ## Tracks info
-set ::env(TRACKS_INFO_FILE) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/openlane/$::env(STD_CELL_LIBRARY)/tracks.info"
+set ::env(TRACKS_INFO_FILE) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/librelane/$::env(STD_CELL_LIBRARY)/tracks.info"
 
 # Signoff
 ## Magic
@@ -185,15 +142,26 @@ set ::env(MAGIC_TECH_FILE) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/magic/$::env(
 set ::env(KLAYOUT_TECH) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/klayout/tech/gf180mcu.lyt"
 set ::env(KLAYOUT_PROPERTIES) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/klayout/tech/gf180mcu.lyp"
 set ::env(KLAYOUT_DEF_LAYER_MAP) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/klayout/tech/gf180mcu.map"
+
 set ::env(KLAYOUT_DRC_RUNSET) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/klayout/tech/drc/gf180mcu.drc"
 set ::env(KLAYOUT_DRC_OPTIONS) [dict create]
-dict set ::env(KLAYOUT_DRC_OPTIONS) feol false
-dict set ::env(KLAYOUT_DRC_OPTIONS) beol false
+dict set ::env(KLAYOUT_DRC_OPTIONS) feol true
+dict set ::env(KLAYOUT_DRC_OPTIONS) beol true
 dict set ::env(KLAYOUT_DRC_OPTIONS) dummy true
 dict set ::env(KLAYOUT_DRC_OPTIONS) offgrid true
-dict set ::env(KLAYOUT_DRC_OPTIONS) run_mode "tiling"
+dict set ::env(KLAYOUT_DRC_OPTIONS) run_mode "deep"
+
+set ::env(KLAYOUT_DENSITY_RUNSET) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/klayout/tech/drc/rule_decks/density.drc"
+set ::env(KLAYOUT_DENSITY_OPTIONS) [dict create]
+dict set ::env(KLAYOUT_DENSITY_OPTIONS) run_mode "tiling"
+
+set ::env(KLAYOUT_ANTENNA_RUNSET) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/klayout/tech/drc/rule_decks/antenna.drc"
+set ::env(KLAYOUT_ANTENNA_OPTIONS) [dict create]
+
+set ::env(KLAYOUT_FILLER_SCRIPT) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/klayout/tech/drc/filler_generation/fill_all.rb"
+
 set ::env(KLAYOUT_LVS_SCRIPT) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/klayout/tech/lvs/gf180mcu.lvs"
-set ::env(KLAYOUT_LVS_OPTIONS) [dict create run_mode deep ]
+set ::env(KLAYOUT_LVS_OPTIONS) [dict create run_mode deep]
 
 ## Netgen
 set ::env(NETGEN_SETUP_FILE) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/netgen/$::env(PDK)_setup.tcl"
@@ -228,3 +196,13 @@ dict set ::env(VIAS_RC) "*" Via4 16.845
 
 set ::env(SIGNAL_WIRE_RC_LAYERS) "Metal2"
 set ::env(CLOCK_WIRE_RC_LAYERS) "Metal4"
+
+# Base SDC
+
+# in ns
+set ::env(CLOCK_UNCERTAINTY_CONSTRAINT) 0.25
+set ::env(CLOCK_TRANSITION_CONSTRAINT) 0.15
+
+# Percentage
+set ::env(TIME_DERATING_CONSTRAINT) 5
+set ::env(IO_DELAY_CONSTRAINT) 20
