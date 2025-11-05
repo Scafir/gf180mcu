@@ -23,6 +23,8 @@ c2c_spacing = 0.7
 # via to via spacing
 v2v_spacing = 0.7
 
+pplus_comp_overlap = 0.03
+
 # When doing flip-chip packaging, the guard ring needs to be protected
 # If not, pad opening is required
 
@@ -30,7 +32,8 @@ v2v_spacing = 0.7
 
 solid_layers_table = {
     "bonding": [
-        {"layer": Layers.COMP, "start": 0, "end": 16},
+        {"layer": Layers.COMP, "start": 0+pplus_comp_overlap, "end": 16-pplus_comp_overlap},
+        {"layer": Layers.Pplus, "start": 0, "end": 16},
         {"layer": Layers.GUARD_RING_MK, "start": 0, "end": 16},
         {"layer": Layers.Metal1, "start": 1, "end": 16},
         {"layer": Layers.Metal2, "start": 0, "end": 16},
@@ -42,7 +45,8 @@ solid_layers_table = {
         {"layer": Layers.Pad, "start": 4, "end": 13},
     ],
     "flip-chip": [
-        {"layer": Layers.COMP, "start": 0, "end": 16},
+        {"layer": Layers.COMP, "start": 0+pplus_comp_overlap, "end": 16-pplus_comp_overlap},
+        {"layer": Layers.Pplus, "start": 0, "end": 16},
         {"layer": Layers.GUARD_RING_MK, "start": 0, "end": 16},
         {"layer": Layers.Metal1, "start": 1, "end": 13},
         {"layer": Layers.Metal2, "start": 0, "end": 13},
@@ -55,7 +59,8 @@ solid_layers_table = {
 
 corner_polygons = {
     "bonding": {
-        Layers.COMP: [pya.DPoint(0, 16), pya.DPoint(16, 16), pya.DPoint(16, 0)],
+        Layers.COMP: [pya.DPoint(0+pplus_comp_overlap, 16), pya.DPoint(16-pplus_comp_overlap, 16), pya.DPoint(16, 16-pplus_comp_overlap), pya.DPoint(16, 0+pplus_comp_overlap)],
+        Layers.Pplus: [pya.DPoint(0, 16), pya.DPoint(16, 16), pya.DPoint(16, 0)],
         Layers.GUARD_RING_MK: [
             pya.DPoint(0, 16),
             pya.DPoint(16, 16),
@@ -91,7 +96,8 @@ corner_polygons = {
         ],
     },
     "flip-chip": {
-        Layers.COMP: [pya.DPoint(0, 16), pya.DPoint(16, 16), pya.DPoint(16, 0)],
+        Layers.COMP: [pya.DPoint(0+pplus_comp_overlap, 16), pya.DPoint(16-pplus_comp_overlap, 16), pya.DPoint(16, 16-pplus_comp_overlap), pya.DPoint(16, 0+pplus_comp_overlap)],
+        Layers.Pplus: [pya.DPoint(0, 16), pya.DPoint(16, 16), pya.DPoint(16, 0)],
         Layers.GUARD_RING_MK: [
             pya.DPoint(0, 16),
             pya.DPoint(16, 16),

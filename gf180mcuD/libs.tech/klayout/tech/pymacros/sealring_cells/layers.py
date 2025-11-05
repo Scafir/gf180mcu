@@ -21,6 +21,8 @@ class Layers:
         return Layers.__dict__[name]
 
     COMP = pya.LayerInfo(22, 0)
+    Pplus = pya.LayerInfo(31, 0)
+    Nplus = pya.LayerInfo(32, 0)
     DNWELL = pya.LayerInfo(12, 0)
     Nwell = pya.LayerInfo(21, 0)
     LVPWELL = pya.LayerInfo(204, 0)
