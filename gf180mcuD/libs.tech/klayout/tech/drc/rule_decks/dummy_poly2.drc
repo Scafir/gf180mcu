@@ -77,13 +77,11 @@ if DUMMY
   dpf9_l1.output('DPF.9', 'DPF.9 : Space of dummy poly2 to Pad: 6.7')
   dpf9_l1.forget
   
-  # TODO: This rule seems strange, dummy COMP would be NDMY, but the image clearly shows PMNDMY
-  #       also the space is huge and this rule conflicts with DPF.19
-  # Rule DPF.11: Space to dummy COMP exclude layer: 29.7
-#  logger.info('Executing rule DPF.11')
-#  dpf11_l1 = poly2_dummy.separation(pmndmy, 29.7.um, euclidian)
-#  dpf11_l1.output('DPF.11', 'DPF.11 : Space to dummy COMP exclude layer: 29.7')
-#  dpf11_l1.forget
+  # Rule DPF.11: Space to dummy COMP exclude layer (NDMY): 29.7
+  logger.info('Executing rule DPF.11')
+  dpf11_l1 = poly2_dummy.separation(ndmy, 29.7.um, euclidian)
+  dpf11_l1.output('DPF.11', 'DPF.11 : Space to dummy COMP exclude layer (NDMY): 29.7')
+  dpf11_l1.forget
   
   # Rule DPF.14: Minimum dummy poly2 space to IND_MK layer: 3
   logger.info('Executing rule DPF.14')
