@@ -18,21 +18,38 @@ if { ![info exist ::env(PAD_CELL_LIBRARY)] } {
     set ::env(PAD_CELL_LIBRARY) gf180mcu_fd_io
 }
 
-# Lib Files
-set ::env(LIB_SYNTH) "\
+
+# Technology lib
+set ::env(LIB) [dict create]
+dict set ::env(LIB) *_tt_025C_5v00 "\
     $::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(STD_CELL_LIBRARY)/lib/$::env(STD_CELL_LIBRARY)__tt_025C_5v00.lib\
     [glob $::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(PAD_CELL_LIBRARY)/lib/*__tt_025C_5v00.lib]\
 "
-set ::env(LIB_FASTEST) "\
+dict set ::env(LIB) *_ff_n40C_5v50 "\
     $::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(STD_CELL_LIBRARY)/lib/$::env(STD_CELL_LIBRARY)__ff_n40C_5v50.lib\
     [glob $::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(PAD_CELL_LIBRARY)/lib/*__ff_n40C_5v50.lib]\
 "
-set ::env(LIB_SLOWEST) "\
+dict set ::env(LIB) *_ss_125C_4v50 "\
     $::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(STD_CELL_LIBRARY)/lib/$::env(STD_CELL_LIBRARY)__ss_125C_4v50.lib\
     [glob $::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(PAD_CELL_LIBRARY)/lib/*__ss_125C_4v50.lib]\
 "
 
-set ::env(LIB_TYPICAL) $::env(LIB_SYNTH)
+# Corners
+set ::env(STA_CORNERS) "\
+nom_tt_025C_5v00 \
+nom_ss_125C_4v50 \
+nom_ff_n40C_5v50 \
+min_tt_025C_5v00 \
+min_ss_125C_4v50 \
+min_ff_n40C_5v50 \
+max_tt_025C_5v00 \
+max_ss_125C_4v50 \
+max_ff_n40C_5v50 \
+"
+
+set ::env(DEFAULT_CORNER) "nom_tt_025C_5v00"
+
+set ::env(TIMING_VIOLATION_CORNERS) "*tt*"
 
 # Technology LEF
 set ::env(TECH_LEF) [glob "$::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(STD_CELL_LIBRARY)/techlef/*__nom.tlef"]
@@ -149,6 +166,7 @@ dict set ::env(KLAYOUT_DRC_OPTIONS) feol true
 dict set ::env(KLAYOUT_DRC_OPTIONS) beol true
 dict set ::env(KLAYOUT_DRC_OPTIONS) dummy true
 dict set ::env(KLAYOUT_DRC_OPTIONS) offgrid true
+dict set ::env(KLAYOUT_DRC_OPTIONS) conn_drc true
 dict set ::env(KLAYOUT_DRC_OPTIONS) run_mode "deep"
 
 set ::env(KLAYOUT_DENSITY_RUNSET) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/klayout/tech/drc/rule_decks/density.drc"
