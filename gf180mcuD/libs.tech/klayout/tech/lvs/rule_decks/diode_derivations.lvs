@@ -40,48 +40,27 @@ nwell_mv = nwell.overlapping(dualgate)
 
 # diode_nd2ps_03v3 diode
 diode_nd2ps_exclude = nwell.join(diode_exclude)
-diode_nd2ps_03v3_terminal_n = ncomp_lv.not(dnwell).and(diode_mk)
+diode_nd2ps_03v3_terminal_n = ncomp_lv.and(diode_mk)
                                       .not(diode_nd2ps_exclude)
-
-# diode_nd2ps_03v3_dn diode
-diode_nd2ps_03v3_dn_terminal_n = ncomp_lv.and(dnwell).and(diode_mk)
-                                         .not(diode_nd2ps_exclude)
 
 # diode_nd2ps_06v0 diode
-diode_nd2ps_06v0_terminal_n = ncomp_mv.not(dnwell).and(diode_mk)
+diode_nd2ps_06v0_terminal_n = ncomp_mv.and(diode_mk)
                                       .not(diode_nd2ps_exclude)
-
-# diode_nd2ps_06v0_dn diode
-diode_nd2ps_06v0_dn_terminal_n = ncomp_mv.and(dnwell).and(diode_mk)
-                                         .not(diode_nd2ps_exclude)
 
 # diode_pd2nw_03v3 diode
 diode_pd2nw_exclude = lvpwell.join(diode_exclude)
-diode_pd2nw_03v3_terminal_p = pcomp_lv.not(dnwell).and(diode_mk)
+diode_pd2nw_03v3_terminal_p = pcomp_lv.and(diode_mk)
                                       .not(diode_pd2nw_exclude)
 
-diode_pd2nw_03v3_terminal_n = nwell_lv.not(dnwell).interacting(ncomp)
+diode_pd2nw_03v3_terminal_n = nwell_lv.interacting(ncomp)
                                       .not(diode_pd2nw_exclude)
-# diode_pd2nw_03v3_dn diode
-diode_pd2nw_03v3_dn_terminal_p = pcomp_lv.and(dnwell).and(diode_mk)
-                                         .not(diode_pd2nw_exclude)
-
-diode_pd2nw_03v3_dn_terminal_n = nwell_lv.and(dnwell).interacting(ncomp)
-                                         .not(diode_pd2nw_exclude)
 
 # diode_pd2nw_06v0 diode
-diode_pd2nw_06v0_terminal_p = pcomp_mv.not(dnwell).and(diode_mk)
+diode_pd2nw_06v0_terminal_p = pcomp_mv.and(diode_mk)
                                       .not(diode_pd2nw_exclude)
 
-diode_pd2nw_06v0_terminal_n = nwell_mv.not(dnwell).interacting(ncomp)
+diode_pd2nw_06v0_terminal_n = nwell_mv.interacting(ncomp)
                                       .not(diode_pd2nw_exclude)
-
-# diode_pd2nw_06v0_dn diode
-diode_pd2nw_06v0_dn_terminal_p = pcomp_mv.and(dnwell).and(diode_mk)
-                                         .not(diode_pd2nw_exclude)
-
-diode_pd2nw_06v0_dn_terminal_n = nwell_mv.and(dnwell).interacting(ncomp)
-                                         .not(diode_pd2nw_exclude)
 
 # diode_nw2ps_03v3 diode
 diode_nw2ps_03v3_terminal_p = pcomp_lv.and(well_diode_mk).not(diode_exclude)
