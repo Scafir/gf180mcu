@@ -34,7 +34,7 @@ append XSCHEM_LIBRARY_PATH :${XSCHEM_SHAREDIR}/xschem_library
 append XSCHEM_LIBRARY_PATH :$env(PWD)
 # append XSCHEM_LIBRARY_PATH :/mnt/sda7/home/schippes/pdks/sky130A/libs.tech/xschem
 #### add ~/.xschem/xschem_library (USER_CONF_DIR is normally ~/.xschem)
-append XSCHEM_LIBRARY_PATH :$USER_CONF_DIR/xschem_library 
+append XSCHEM_LIBRARY_PATH :$USER_CONF_DIR/xschem_library
 
 ###########################################################################
 #### SET CUSTOM COLORS FOR XSCHEM LIBRARIES MATCHING CERTAIN PATTERNS
@@ -59,7 +59,7 @@ set XSCHEM_START_WINDOW {tests/0_top.sch}
 ###########################################################################
 #### DIRECTORY WHERE SIMULATIONS, NETLIST AND SIMULATOR OUTPUTS ARE PLACED
 ###########################################################################
-#### If unset $USER_CONF_DIR/simulations is assumed (normally ~/.xschem/simulations) 
+#### If unset $USER_CONF_DIR/simulations is assumed (normally ~/.xschem/simulations)
 # set netlist_dir $env(HOME)/.xschem/simulations
 
 ###########################################################################
@@ -79,13 +79,13 @@ set XSCHEM_START_WINDOW {tests/0_top.sch}
 # set noprint_libs {}
 
 ###########################################################################
-#### CHANGE DEFAULT [] WITH SOME OTHER CHARACTERS FOR BUSSED SIGNALS 
-#### IN SPICE NETLISTS (EXAMPLE: DATA[7] --> DATA<7>) 
+#### CHANGE DEFAULT [] WITH SOME OTHER CHARACTERS FOR BUSSED SIGNALS
+#### IN SPICE NETLISTS (EXAMPLE: DATA[7] --> DATA<7>)
 ###########################################################################
 #### default: empty (use xschem default, [ ])
 # set bus_replacement_char {<>}
 #### for XSPICE: replace square brackets as the are used for XSPICE vector nodes.
-# set bus_replacement_char {__} 
+# set bus_replacement_char {__}
 
 ###########################################################################
 #### SOME DEFAULT BEHAVIOR
@@ -128,12 +128,12 @@ set XSCHEM_START_WINDOW {tests/0_top.sch}
 # set connect_by_kissing 1
 
 #### if set to 1 automatically join/trim wires while editing
-#### this may slow down on rally big designs. Can be disabled via menu 
+#### this may slow down on rally big designs. Can be disabled via menu
 #### default: 0
 # set autotrim_wires 0
 
 #### set widget scaling (mainly for font display), this is useful on 4K displays
-#### default: unset (tk uses its default) > 1.0 ==> bigger 
+#### default: unset (tk uses its default) > 1.0 ==> bigger
 # set tk_scaling 1.7
 
 #### disable some symbol layers. Default: none, all layers are visible.
@@ -145,7 +145,7 @@ set XSCHEM_START_WINDOW {tests/0_top.sch}
 ###########################################################################
 #### EXPORT FORMAT TRANSLATORS, PNG AND PDF
 ###########################################################################
-#### command to translate xpm to png; (assumes command takes source 
+#### command to translate xpm to png; (assumes command takes source
 #### and dest file as arguments, example: gm convert plot.xpm plot.png)
 #### default: {gm convert}
 # set to_png {gm convert}
@@ -159,7 +159,7 @@ set to_pdf {ps2pdf -dAutoRotatePages=/None}
 ###########################################################################
 #### UNDO: SAVE ON DISK OR KEEP IN MEMORY
 ###########################################################################
-#### Alloved: 'disk'or 'memory'. 
+#### Alloved: 'disk'or 'memory'.
 #### Saving undo on disk is safer but slower on extremely big schematics.
 #### In most cases you won't notice any delay. Undo on disk allows previous
 #### state recovery in case of crashes. In-memory undo is extremely fast
@@ -200,7 +200,7 @@ set to_pdf {ps2pdf -dAutoRotatePages=/None}
 #### Scale all fonts by this number
 # set cairo_font_scale 1.0
 
-#### default for following two is 0.85 (xscale) and 0.88 (yscale) to 
+#### default for following two is 0.85 (xscale) and 0.88 (yscale) to
 #### match cairo font spacing
 # set nocairo_font_xscale 1.0
 #### set nocairo_font_yscale 1.0
@@ -234,7 +234,7 @@ set to_pdf {ps2pdf -dAutoRotatePages=/None}
 ###########################################################################
 #### default for linux: xterm
 # set terminal {xterm -geometry 100x35 -fn 9x15 -bg black -fg white -cr white -ms white }
-#### lxterminal is not OK since it will not inherit env vars: 
+#### lxterminal is not OK since it will not inherit env vars:
 #### In order to reduce memory usage and increase the performance, all instances
 #### of the lxterminal are sharing a single process. LXTerminal is part of LXDE
 
@@ -300,7 +300,7 @@ set toolbar_visible 1
 ###########################################################################
 #### TABBED WINDOWS
 ###########################################################################
-# default: not enabled. Interface can be changed runtime if only one window 
+# default: not enabled. Interface can be changed runtime if only one window
 # or tab is open.
 set tabbed_interface 1
 
@@ -316,7 +316,7 @@ if { [info exists env(PDK_ROOT)] && $env(PDK_ROOT) ne {} } {
   }
   set PDK_ROOT $env(PDK_ROOT)
 } else {
-  ## not existing or empty. 
+  ## not existing or empty.
   puts stderr "Warning: PDK_ROOT env. var. not found or empty, trying to find a pdk install"
   if {[file isdir /usr/share/pdk]} {set PDK_ROOT /usr/share/pdk
   } elseif {[file isdir /usr/local/share/pdk]} {set PDK_ROOT /usr/local/share/pdk
@@ -336,6 +336,7 @@ if {[info exists PDK_ROOT]} {
 set XSCHEM_START_WINDOW ${PDK_ROOT}/gf180mcuD/libs.tech/xschem/tests/0_top.sch
 append XSCHEM_LIBRARY_PATH :${PDK_ROOT}/gf180mcuD/libs.tech/xschem/tests
 append XSCHEM_LIBRARY_PATH :${PDK_ROOT}/gf180mcuD/libs.tech/xschem
+append XSCHEM_LIBRARY_PATH :${PDK_ROOT}/gf180mcuD/libs.ref/gf180mcu_fd_io/xschem
 
 # allow a user-specific path add-on
 if { [info exists ::env(XSCHEM_USER_LIBRARY_PATH) ] } {
