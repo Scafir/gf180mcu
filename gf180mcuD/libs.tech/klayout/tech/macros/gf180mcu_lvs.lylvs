@@ -52,8 +52,14 @@ if options["netlist"] == ""
       net_dir = "#{layout_path.split()[0]}/#{net_name}.spice"
     end
 else  
-    net_dir = options["netlist"]
-
+    if Pathname.new(options["netlist"]).absolute?
+        net_dir = options["netlist"]
+    else
+        ## If path is relative, interpret it as relative to layout directory, 
+        ## as is done in gf180mcu.lvs
+        layout_dir = Pathname.new(RBA::CellView.active.filename).parent.realpath
+        net_dir = File.expand_path(options["netlist"], layout_dir)
+    end
 end
 
 unless File.exist?net_dir
