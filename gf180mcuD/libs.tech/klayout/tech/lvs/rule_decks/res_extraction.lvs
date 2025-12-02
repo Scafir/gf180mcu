@@ -83,9 +83,13 @@ logger.info('Extracting NPOLYF_U_DW device')
 extract_devices(resistor_with_bulk('npolyf_u', 310, BResistor),
                 { 'R' => npolyf_u_dw_layer, 'C' => poly2_con, 'W' => dnwell })
 
-# PPOLYF_U
-logger.info('Extracting PPOLYF_U device')
-extract_devices(resistor_with_bulk('ppolyf_u', 350, BResistor), { 'R' => ppolyf_u_layer, 'C' => poly2_con, 'W' => sub })
+# PPOLYF_U NWELL
+logger.info('Extracting PPOLYF_U NWELL device')
+extract_devices(resistor_with_bulk('ppolyf_u', 350, BResistor), { 'R' => ppolyf_u_nwell_layer, 'C' => poly2_con, 'W' => nwell_con })
+
+# PPOLYF_U SUB
+logger.info('Extracting PPOLYF_U SUB device')
+extract_devices(resistor_with_bulk('ppolyf_u', 350, BResistor), { 'R' => ppolyf_u_sub_layer, 'C' => poly2_con, 'W' => sub })
 
 # PPOLYF_U_DW
 logger.info('Extracting PPOLYF_U_DW device')
