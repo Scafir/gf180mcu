@@ -622,7 +622,9 @@ logger.info("border has #{count} polygons")
 polygons_count += count
 logger.info("Total no. of polygons in the design is #{polygons_count}")
 
-logger.info('Starting deriving base layers.')
+sub = get_polygons(23, 5)
+count = sub.count
+logger.info("sub has #{count} polygons")
+polygons_count += count
 
-#=== BULK LAYER ===
-sub = polygon_layer
+logger.info("Total no. of polygons in the design is #{polygons_count}")
