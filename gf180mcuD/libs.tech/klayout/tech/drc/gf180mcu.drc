@@ -26,14 +26,14 @@ require 'etc'
 exec_start_time = Time.now
 
 # Custom formatter including timestamp and memory usage
-formatter = proc do |_severity, datetime, _progname, msg|
+FORMATTER = proc do |_severity, datetime, _progname, msg|
   memory_usage = "#{RBA::Timer.memory_size / 1024}K"
   "#{datetime}: Memory Usage (#{memory_usage}) : #{msg}\n"
 end
 
 # Create stdout logger
 logger = Logger.new($stdout)
-logger.formatter = formatter
+logger.formatter = FORMATTER
 
 # Don't buffer stdout
 $stdout.sync = true
@@ -54,15 +54,17 @@ end
 
 logger.info('Loading database to memory is complete.')
 
-if $report
-  logger.info("GF180MCU Klayout DRC runset output at: #{$report}")
-  report('DRC Run Report at', $report)
-else
-  layout_dir = Pathname.new(RBA::CellView.active.filename).parent.realpath
-  report_path = layout_dir.join('gf180_drc.lyrdb').to_s
-  logger.info("GF180MCU Klayout DRC runset output at default location: #{report_path}")
-  report('DRC Run Report at', report_path)
-end
+report_me = report("Test report")
+report_meme = "HELLO"
+#if $report
+#  logger.info("GF180MCU Klayout DRC runset output at: #{$report}")
+#  #report('DRC Run Report at', $report)
+#else
+#  layout_dir = Pathname.new(RBA::CellView.active.filename).parent.realpath
+#  report_path = layout_dir.join('gf180_drc.lyrdb').to_s
+#  logger.info("GF180MCU Klayout DRC runset output at default location: #{report_path}")
+#  report('DRC Run Report at') #, report_path)
+#end
 
 #================================================
 #------------------ SWITCHES --------------------
@@ -422,82 +424,297 @@ logger.info("Total area of the design is #{CHIP.area} um^2.")
 #----------------- MAIN RUNSET ------------------
 #================================================
 
+
 logger.info('Starting GF180MCU DRC rules.')
 logger.info('Running all FEOL rules') if FEOL
 logger.info('Running all BEOL rules') if BEOL
 logger.info('Running all DUMMY rules') if DUMMY
+require 'thread'
+require 'stringio'
 
-# %include rule_decks/comp.drc
-# %include rule_decks/contact.drc
-# %include rule_decks/contact_split.drc
-# %include rule_decks/dnwell.drc
-# %include rule_decks/dnwell_split.drc
-# %include rule_decks/drc_bjt.drc
-# %include rule_decks/dualgate.drc
-# %include rule_decks/efuse.drc
-# %include rule_decks/esd.drc
-# %include rule_decks/geom.drc
-# %include rule_decks/hres.drc
-# %include rule_decks/ldnmos.drc
-# %include rule_decks/ldnmos_split.drc
-# %include rule_decks/ldpmos.drc
-# %include rule_decks/ldpmos_split.drc
-# %include rule_decks/lres.drc
-# %include rule_decks/lvpwell.drc
-# %include rule_decks/lvpwell_split.drc
-# %include rule_decks/lvs_bjt.drc
-# %include rule_decks/mcell.drc
-# %include rule_decks/metal1.drc
-# %include rule_decks/metal1_split.drc
-# %include rule_decks/metal2.drc
-# %include rule_decks/metal3.drc
-# %include rule_decks/metal4.drc
-# %include rule_decks/metal5.drc
-# %include rule_decks/metaltop_30k.drc
-# %include rule_decks/metaltop.drc
-# %include rule_decks/mim_a.drc
-# %include rule_decks/mim_b.drc
-# %include rule_decks/nat.drc
-# %include rule_decks/nat_split.drc
-# %include rule_decks/nplus.drc
-# %include rule_decks/nwell.drc
-# %include rule_decks/nwell_split.drc
-# %include rule_decks/otp_mk.drc
-# %include rule_decks/poly2.drc
-# %include rule_decks/pplus.drc
-# %include rule_decks/pres.drc
-# %include rule_decks/sab.drc
-# %include rule_decks/sram_3p3.drc
-# %include rule_decks/sram_5p0.drc
-# %include rule_decks/tail.drc
-# %include rule_decks/via1.drc
-# %include rule_decks/via1_split.drc
-# %include rule_decks/via2.drc
-# %include rule_decks/via2_split.drc
-# %include rule_decks/via3.drc
-# %include rule_decks/via3_split.drc
-# %include rule_decks/via4.drc
-# %include rule_decks/via4_split.drc
-# %include rule_decks/via5.drc
-# %include rule_decks/ymtp_mk.drc
+MAIN_BINDING = binding
 
-# Always enabled
-# %include rule_decks/dummy_exclude.drc
+class RuleChecker
+  def initialize(rule_files, report, num_workers: 4)
+    @rule_files = rule_files
+    @report = report
+    @num_workers = num_workers
+  end
 
-# %include rule_decks/dummy_comp.drc
-# %include rule_decks/dummy_poly2.drc
-# %include rule_decks/dummy_metal1.drc
-# %include rule_decks/dummy_metal2.drc
-# %include rule_decks/dummy_metal3.drc
-# %include rule_decks/dummy_metal4.drc
-# %include rule_decks/dummy_metal5.drc
+  def run
+    parallelize_with_processes(@rule_files)
+    
+    # Step 4: Return or process results
+    #results
+  end
 
-# %include rule_decks/guard_ring.drc
+  private
+  def merge_databases(db1, db2)
+    # Copy metadata from db2 to db1 if db1 is empty
+    if db1.description.empty? && !db2.description.empty?
+      db1.description = db2.description
+    end
+    
+    if db1.generator.empty? && !db2.generator.empty?
+      db1.generator = db2.generator
+    end
+    
+    if db1.top_cell_name.empty? && !db2.top_cell_name.empty?
+      db1.top_cell_name = db2.top_cell_name
+    end
+    
+    if db1.original_file.empty? && !db2.original_file.empty?
+      db1.original_file = db2.original_file
+    end
+    
+    category_map = {}
+    cell_map = {}
+    
+    # Copy cells
+    db2.each_cell do |cell2|
+      cell1 = db1.cell_by_qname(cell2.qname)
+      if cell1.nil?
+        cell1 = cell2.variant.empty? ? 
+          db1.create_cell(cell2.name) : 
+          db1.create_cell(cell2.name, cell2.variant)
+      end
+      cell_map[cell2.rdb_id] = cell1
+    end
+    
+    # Helper to get the full path of a category by traversing up the tree
+    get_full_path = lambda do |cat|
+      path_parts = []
+      current = cat
+      while current
+        path_parts.unshift(current.name)
+        current = current.parent
+      end
+      path_parts.join('.')
+    end
+    
+    # Copy categories recursively - preserving actual hierarchy
+    copy_category = lambda do |cat2, parent1|
+      # Check if category already exists
+      if parent1.nil?
+        # Top-level category
+        cat1 = db1.category_by_path(cat2.name)
+        if cat1.nil?
+          cat1 = db1.create_category(cat2.name)
+        end
+      else
+        # Sub-category - check within parent
+        parent_path = get_full_path.call(parent1)
+        full_path = "#{parent_path}.#{cat2.name}"
+        cat1 = db1.category_by_path(full_path)
+        if cat1.nil?
+          cat1 = db1.create_category(parent1, cat2.name)
+        end
+      end
+      
+      # Copy description
+      if cat1.description.empty? && !cat2.description.empty?
+        cat1.description = cat2.description
+      end
+      
+      # Store in map using the full path from db2
+      full_path2 = get_full_path.call(cat2)
+      category_map[cat2.rdb_id] = cat1
+      
+      # Recursively copy sub-categories
+      cat2.each_sub_category do |sub_cat2|
+        copy_category.call(sub_cat2, cat1)
+      end
+    end
+    
+    # Copy all top-level categories
+    db2.each_category do |cat2|
+      copy_category.call(cat2, nil)
+    end
+    
+    # Copy items
+    db2.each_item do |item2|
+      cell1 = cell_map[item2.cell_id]
+      cat1 = category_map[item2.category_id]
+      
+      if cell1 && cat1
+        item1 = db1.create_item(cell1.rdb_id, cat1.rdb_id)
+        
+        # Copy values
+        item2.each_value { |value| item1.add_value(value) }
+        
+        ## Copy tags
+        #item2.each_tag { |tag_id| item1.add_tag(tag_id) }
+      end
+    end
+    
+    db1
+  end
 
-# %include rule_decks/cup.drc
+  def parallelize_with_processes(rule_files)
+    # Split work among processes
+    chunk_size = (rule_files.size / @num_workers.to_f).ceil
+    chunks = rule_files.each_slice(chunk_size).to_a
+    
+    results = []
+    pids = []
+    
+    # Create read/write pipes for each worker
+    pipes = @num_workers.times.map { IO.pipe }
+    
+    chunks.each_with_index do |chunk, i|
+      reader, writer = pipes[i]
+      pid = fork do
+        reader.close
+        chunk_results = []
+        
+        chunk.each do |file|
+          puts "Process #{i}: Starting #{File.basename(file)}"
+          result = execute_rule(file)
+          chunk_results << result
+          puts "Process #{i}: Completed #{File.basename(file)}"
+        end
 
-#================================================
-#-------------------- Tail ----------------------
-#================================================
+        puts "Process #{i}: Completed work, shutting down.."
+        
+        # Send results back to parent
+        writer.write(Marshal.dump(chunk_results))
+        writer.close
+      end
+      
+      writer.close
+      pids << pid
+    end
+    
+    # Collect results from all processes
+    pipes.each do |reader, _|
+      chunk_results = Marshal.load(reader.read)
+      results.concat(chunk_results)
+      reader.close
+    end
+    
+    # Wait for all processes to finish
+    pids.each { |pid| Process.wait(pid) }
+    
+    puts "Aggregating results"
+    aggregated_res = RBA::ReportDatabase.new()
+    results.each do | element |
+      incoming_rep = RBA::ReportDatabase.new()
+      incoming_rep.load_from_string(element[:result])
+      puts "Adding: "
+      puts incoming_rep.write_to_string()
+      aggregated_res = merge_databases(aggregated_res, incoming_rep)
+      puts "concatenated"
+      puts aggregated_res.write_to_string()
+
+
+    end
+       
+    aggregated_res
+  end
+
+  def execute_rule(file)
+    # Create isolated binding for each rule file
+    # This prevents rules from interfering with each other
+    
+    logger = Logger.new($stdout)
+    logger.formatter = FORMATTER
+    rule_code = File.read(file)
+    #binding_context.eval(rule_code, file)
+    eval(rule_code, MAIN_BINDING, file)
+
+    # Get the result (assumes each rule sets a 'result' variable)
+    result_string = @report.rdb.write_to_string()
+    {
+      file: File.basename(file),
+      result: result_string,
+      timestamp: Time.now
+    }
+  rescue => e
+    {
+      file: File.basename(file),
+      result: "ERROR: #{e.message}",
+      timestamp: Time.now
+    }
+  end
+
+end
+
+rule_files = ["./rule_decks/comp.drc",
+              "./rule_decks/contact.drc",
+              "./rule_decks/contact_split.drc",
+              "./rule_decks/dnwell.drc",
+              "./rule_decks/dnwell_split.drc",
+              "./rule_decks/drc_bjt.drc",
+              "./rule_decks/dualgate.drc",
+              "./rule_decks/efuse.drc",
+              "./rule_decks/esd.drc",
+              "./rule_decks/geom.drc",
+              "./rule_decks/hres.drc",
+              "./rule_decks/ldnmos.drc",
+              "./rule_decks/ldnmos_split.drc",
+              "./rule_decks/ldpmos.drc",
+              "./rule_decks/ldpmos_split.drc",
+              "./rule_decks/lres.drc",
+              "./rule_decks/lvpwell.drc",
+              "./rule_decks/lvpwell_split.drc",
+              "./rule_decks/lvs_bjt.drc",
+              "./rule_decks/mcell.drc",
+              "./rule_decks/metal1.drc",
+              "./rule_decks/metal1_split.drc",
+              "./rule_decks/metal2.drc",
+              "./rule_decks/metal3.drc",
+              "./rule_decks/metal4.drc",
+              "./rule_decks/metal5.drc",
+              "./rule_decks/metaltop_30k.drc",
+              "./rule_decks/metaltop.drc",
+              "./rule_decks/mim_a.drc",
+              "./rule_decks/mim_b.drc",
+              "./rule_decks/nat.drc",
+              "./rule_decks/nat_split.drc",
+              "./rule_decks/nplus.drc",
+              "./rule_decks/nwell.drc",
+              "./rule_decks/nwell_split.drc",
+              "./rule_decks/otp_mk.drc",
+              "./rule_decks/poly2.drc",
+              "./rule_decks/pplus.drc",
+              "./rule_decks/pres.drc",
+              "./rule_decks/sab.drc",
+              "./rule_decks/sram_3p3.drc",
+              "./rule_decks/sram_5p0.drc",
+              "./rule_decks/via1.drc",
+              "./rule_decks/via1_split.drc",
+              "./rule_decks/via2.drc",
+              "./rule_decks/via2_split.drc",
+              "./rule_decks/via3.drc",
+              "./rule_decks/via3_split.drc",
+              "./rule_decks/via4.drc",
+              "./rule_decks/via4_split.drc",
+              "./rule_decks/via5.drc",
+              "./rule_decks/ymtp_mk.drc",
+              "./rule_decks/dummy_exclude.drc",
+              "./rule_decks/dummy_comp.drc",
+              "./rule_decks/dummy_poly2.drc",
+              "./rule_decks/dummy_metal1.drc",
+              "./rule_decks/dummy_metal2.drc",
+              "./rule_decks/dummy_metal3.drc",
+              "./rule_decks/dummy_metal4.drc",
+              "./rule_decks/dummy_metal5.drc",
+              "./rule_decks/guard_ring.drc",
+              "./rule_decks/cup.drc",
+             ]
+
+rule_files_abs = []
+rule_files.each do | element |
+  rule_files_abs.push(File.join(File.dirname(__FILE__), element))
+end
+
+# Run checker
+checker = RuleChecker.new(rule_files_abs, report_me, num_workers: 10)
+results = checker.run
+puts "Run end"
+
+##================================================
+##-------------------- Tail ----------------------
+##================================================
 
 # %include rule_decks/tail.drc
