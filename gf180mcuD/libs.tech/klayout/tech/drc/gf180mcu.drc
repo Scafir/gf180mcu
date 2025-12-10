@@ -549,63 +549,123 @@ class RuleChecker
     
     db1
   end
-
+  
+  require 'io/wait'
   def parallelize_with_processes(rule_files)
-    # Split work among processes
-    chunk_size = (rule_files.size / @num_workers.to_f).ceil
-    chunks = rule_files.each_slice(chunk_size).to_a
-    
     results = []
     pids = []
     
-    # Create read/write pipes for each worker
-    pipes = @num_workers.times.map { IO.pipe }
-    
-    chunks.each_with_index do |chunk, i|
+    puppets = []
+    pipes = @num_workers.times.map { IO.pipe } 
+    @num_workers.times do |i|
       reader, writer = pipes[i]
+      master_to_puppet_r, master_to_puppet_w = IO.pipe
+      puppet_to_master_r, puppet_to_master_w = IO.pipe
+    
       pid = fork do
         reader.close
+        # Child (puppet)
         chunk_results = []
-        
-        chunk.each do |file|
-          puts "Process #{i}: Starting #{File.basename(file)}"
-          result = execute_rule(file)
-          chunk_results << result
-          puts "Process #{i}: Completed #{File.basename(file)}"
-        end
+        master_to_puppet_w.close
+        puppet_to_master_r.close
+    
+        # Tell master we are ready
+        puppet_to_master_w.puts "ready"
 
-        puts "Process #{i}: Completed work, shutting down.."
-        
+        loop do
+    
+          # Wait for next task (blocks until master writes something)
+          task = master_to_puppet_r.gets
+          if task == nil
+            sleep(0.01)
+            next
+          end
+          task.chomp!
+
+          break if task == "shutdown"
+
+    
+          # Do work
+          puts "Worker #{i}: Processing #{File.basename(task)}"
+          begin
+            result = execute_rule(task)
+            chunk_results << result
+          rescue => e
+            chunk_results << { file: task, error: e.message }
+          end
+          puts "Worker #{i}: Done processing #{File.basename(task)}"
+          # Tell master we are ready
+          puppet_to_master_w.puts "ready"
+
+        end
+        puts "Worker #{i}: Shutting down"
+    
         # Send results back to parent
         writer.write(Marshal.dump(chunk_results))
-        writer.close
+        writer.close 
+        exit
       end
       
       writer.close
-      pids << pid
+      master_to_puppet_r.close
+      puppet_to_master_w.close
+    
+      puppets << {
+        pid: pid,
+        to_puppet: master_to_puppet_w,
+        from_puppet: puppet_to_master_r
+      }
     end
     
+    # Master loop
+    strings_queue = rule_files.dup
+    
+    while !strings_queue.empty? || puppets.any?
+      # Wait for ready puppets
+      ready_pipes = puppets.map { |p| p[:from_puppet] }.select { |r| r.ready? }
+    
+      ready_pipes.each do |pipe|
+        pipe.gets # remove "ready"
+        puppet = puppets.find { |p| p[:from_puppet] == pipe }
+    
+        if strings_queue.empty?
+          # No more tasks, send shutdown
+          puppet[:to_puppet].puts "shutdown"
+          puppet[:to_puppet].flush
+          puppets.delete(puppet)
+        else
+          # Send next task
+          next_string = strings_queue.shift
+          puppet[:to_puppet].puts next_string
+          puppet[:to_puppet].flush
+        end
+      end
+    end
+
     # Collect results from all processes
     pipes.each do |reader, _|
       chunk_results = Marshal.load(reader.read)
       results.concat(chunk_results)
       reader.close
     end
+
+    # Wait for all puppets to finish
+    puppets.each do |p|
+      Process.wait(p[:pid])
+    end
     
-    # Wait for all processes to finish
-    pids.each { |pid| Process.wait(pid) }
+    puts "All workers completed. Total results: #{results.size}"
     
     puts "Aggregating results"
     aggregated_res = RBA::ReportDatabase.new()
     results.each do | element |
       incoming_rep = RBA::ReportDatabase.new()
       incoming_rep.load_from_string(element[:result])
-      puts "Adding: "
-      puts incoming_rep.write_to_string()
+      #puts "Adding: "
+      #puts incoming_rep.write_to_string()
       aggregated_res = merge_databases(aggregated_res, incoming_rep)
-      puts "concatenated"
-      puts aggregated_res.write_to_string()
-
+      #puts "concatenated"
+      #puts aggregated_res.write_to_string()
 
     end
        
@@ -712,6 +772,7 @@ end
 checker = RuleChecker.new(rule_files_abs, report_me, num_workers: 10)
 results = checker.run
 puts "Run end"
+puts results.write_to_string()
 
 ##================================================
 ##-------------------- Tail ----------------------
