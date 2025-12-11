@@ -321,6 +321,7 @@ def generate_klayout_switches(arguments, layout_path):
     else:
         switches["feol"] = "true"
 
+    switches["dummy"] = "true"
     if arguments["--no_beol"]:
         switches["beol"] = "false"
     else:
