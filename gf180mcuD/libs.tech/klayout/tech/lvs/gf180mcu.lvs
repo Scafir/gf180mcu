@@ -137,6 +137,11 @@ IMPLICIT_CONNECT = bool_check?($implicit_connect)
 
 logger.info("Selected IMPLICIT_CONNECT option: #{IMPLICIT_CONNECT}")
 
+# IGNORE DN DW features
+IGNORE_DN_DW_FEATURES = bool_check?($ignore_dn_dw_features)
+
+logger.info("Selected IGNORE_DN_DW_FEATURES option: #{IGNORE_DN_DW_FEATURES}")
+
 #=== PRINT DETAILS ===
 logger.info("Verbose mode: #{$verbose}")
 if $verbose == 'true'
