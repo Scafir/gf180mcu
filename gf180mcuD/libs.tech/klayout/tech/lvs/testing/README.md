@@ -39,15 +39,10 @@ project_root/
 
 ### Test-Specific Switches
 
-`test_config.yaml` defines if special switches should be forwarded the the lvs script.
+`test_config.yaml` defines if special switches should be forwarded the lvs script.
 For example:
 
 ```yaml
-# Category-level switches
-category_switches:
-  mimcap_devices:
-    mim_option: "A"
-
 # Test-specific switches (override category)
 test_switches:
   cap_mim_1f0_m2m3_noshield:
